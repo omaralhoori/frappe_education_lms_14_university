@@ -1,0 +1,68 @@
+
+<div class="common-card-style course-card" data-course="{{ course.name }}">
+
+    <div class="course-image {% if not course.image %} default-image {% endif %}"
+    {% if course.image %} style="background-image: url( {{ course.image | urlencode }} );" {% endif %}>
+        {% if not course.image %}
+            <div class="default-image-text">{{ course.title[0] }}</div>
+        {% endif %}
+    </div>
+
+
+    <div class="course-card-content">
+        <div class="course-card-title">{{ course.title }}</div>
+
+        {% if progress %}
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}"
+            aria-valuemin="0" aria-valuemax="100" style="width:{{ progress }}%">
+            <span class="sr-only"> {{ progress }} {{ _("Complete") }} </span>
+            </div>
+        </div>
+        <div class="progress-percent">{{ progress }}% {{ _("Completed") }} </div>
+        {% endif %}
+
+        <div class="course-card-footer">
+            <span class="">
+                {% set instructors = get_instructors(course.name) %}
+                {% set ins_len = instructors | length %}
+                {% for instructor in instructors %}
+                {% if ins_len > 1 and loop.index == 1 %}
+                <div class="avatar-group overlap">
+                {% endif %}
+                {{ widgets.Avatar(member=instructor, avatar_class="avatar-small") }}
+
+                {% if ins_len > 1 and loop.index == ins_len %}
+                </div>
+                {% endif %}
+                {% endfor %}
+                    <span class="course-instructor">
+                    {% if ins_len == 1 %}
+                        {{ instructors[0].full_name }}
+                    {% elif ins_len == 2 %}
+                        {{ instructors[0].full_name.split(" ")[0] }} {{_("and")}} {{ instructors[1].full_name.split(" ")[0] }}
+                    {% elif ins_len > 2 %}
+                        {% set suffix = "other" if ins_len - 1 == 1 else "others"  %}
+                        {{ instructors[0].full_name.split(" ")[0] }} {{_("and")}} {{ ins_len - 1 }} {{ _(suffix) }}
+                    {% endif %}
+                    </span>
+            </span>
+        </div>
+
+        {% if read_only %}
+            <a class="stretched-link" href="/courses/{{ course.name }}"></a>
+		{% else %}
+            {% if progress != 100 and membership and not course.upcoming %}
+
+				{% set lesson_index = get_lesson_index(membership.current_lesson or "1.1") %}
+
+				{% set query_parameter = "?batch=" + membership.batch if membership.batch else "" %}
+
+				<a class="stretched-link" href="{{ get_lesson_url(course.name, lesson_index) }}{{ query_parameter }}"></a>
+
+			{% else %}
+				<a class="stretched-link" href="/courses/{{ course.name }}"></a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

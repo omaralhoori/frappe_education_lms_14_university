@@ -2,7 +2,7 @@ from . import __version__ as app_version
 
 app_name = "education_lms"
 app_title = "Education Lms"
-app_publisher = "OMar"
+app_publisher = "Omar"
 app_description = "Learning management system for erpnext education"
 app_email = "lms@mail.com"
 app_license = "MIT"
@@ -24,6 +24,11 @@ app_license = "MIT"
 # include js, css files in header of web form
 # webform_include_js = {"doctype": "public/js/doctype.js"}
 # webform_include_css = {"doctype": "public/css/doctype.css"}
+
+# include js, css files in header of web template
+web_include_css = "lms.bundle.css"
+# web_include_css = "/assets/lms/css/lms.css"
+web_include_js = ["website.bundle.js"]
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
@@ -55,10 +60,13 @@ app_license = "MIT"
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-#	"methods": "education_lms.utils.jinja_methods",
-#	"filters": "education_lms.utils.jinja_filters"
-# }
+jinja = {
+	"methods": [
+    "education_lms.education_lms.utils.get_instructors",
+    "education_lms.education_lms.utils.get_palette",
+	],
+	#"filters": "education_lms.utils.jinja_filters"
+}
 
 # Installation
 # ------------
@@ -159,6 +167,10 @@ app_license = "MIT"
 
 # ignore_links_on_delete = ["Communication", "ToDo"]
 
+
+update_website_context = [
+	"education_lms.widgets.update_website_context",
+]
 
 # User Data Protection
 # --------------------

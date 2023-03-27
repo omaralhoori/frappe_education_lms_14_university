@@ -1,0 +1,43 @@
+{% extends "education_lms/templates/lms_base.html" %}
+
+
+{% block title %}
+{{ 'Courses' }}
+{% endblock %}
+
+
+{% block page_content %}
+<div class="common-page-style">
+    <div class="container">
+            <div class="course-home-headings">
+                {{ _("All Courses") }}
+            </div>
+
+            <ul class="nav lms-nav" id="courses-tab">
+
+                {% if frappe.session.user != "Guest" %}
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#courses-enrolled">
+                        {{ _("Enrolled") }} ({{ enrolled_courses | length }})
+                    </a>
+                </li>
+                {% endif %}
+
+
+            </ul>
+
+            <div class="border-bottom mb-4"></div>
+
+            <div class="tab-content">
+                {% if frappe.session.user != "Guest" %}
+                <div class="tab-pane fade" id="courses-enrolled" role="tabpanel" aria-labelledby="courses-enrolled">
+					{% set courses = enrolled_courses %}
+                    {% set title = _("Enrolled Courses") %}
+                    {% set classes = "enrolled-courses" %}
+                    {% include "education_lms/templates/course_list.html" %}
+                </div>
+                {% endif %}
+            </div>
+    </div>
+</div>
+{% endblock %}
