@@ -26,9 +26,9 @@ app_license = "MIT"
 # webform_include_css = {"doctype": "public/css/doctype.css"}
 
 # include js, css files in header of web template
-# web_include_css = "lms.bundle.css"
-# # web_include_css = "/assets/lms/css/lms.css"
-# web_include_js = ["website.bundle.js"]
+web_include_css = "lms.bundle.css"
+# web_include_css = "/assets/lms/css/lms.css"
+web_include_js = ["website.bundle.js"]
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
