@@ -4,3 +4,5 @@
 *.swp
 tags
 node_modules
+education_lms/docs/current
+education_lms/public/dist
