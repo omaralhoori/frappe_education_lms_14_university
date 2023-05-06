@@ -1,5 +1,5 @@
 from . import __version__ as app_version
-
+from frappe import _
 app_name = "education_lms"
 app_title = "Education Lms"
 app_publisher = "Omar"
@@ -97,6 +97,17 @@ jinja = {
 # has_permission = {
 #	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
+
+
+standard_portal_menu_items = [
+	{
+		"title": _("Enrolled Courses"),
+		"route": "/courses",
+		"role": "Student",
+	},
+]
+
+
 
 # DocType Class
 # ---------------
