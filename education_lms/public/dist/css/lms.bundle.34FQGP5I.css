@@ -1,4 +1,4 @@
-/* ../../../../../tmp/tmp-16815-XBx2rdLA4A11/18720b98e674/style.css */
+/* ../../../../../tmp/tmp-24344-JDzEnRvw2zca/187526c063d5/style.css */
 :root {
   --text-3-5xl: 24px;
   --text-3-8xl: 34px;
@@ -174,7 +174,7 @@ input[type=checkbox] {
 }
 .cards-parent {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   -moz-column-gap: 40px;
   column-gap: 40px;
   row-gap: 40px;
@@ -182,7 +182,7 @@ input[type=checkbox] {
 }
 @media (max-width: 767px) {
   .cards-parent {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     -moz-column-gap: 16px;
     column-gap: 16px;
     row-gap: 16px;
@@ -1658,5 +1658,5 @@ select {
   font-weight: 500;
 }
 
-/* ../../../../../tmp/tmp-16815-XBx2rdLA4A11/education_lms/education_lms/public/css/lms.bundle.css */
-/*# sourceMappingURL=lms.bundle.OYBMA36C.css.map */
+/* ../../../../../tmp/tmp-24344-JDzEnRvw2zca/education_lms/education_lms/public/css/lms.bundle.css */
+/*# sourceMappingURL=lms.bundle.34FQGP5I.css.map */
