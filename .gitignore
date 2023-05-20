@@ -3,4 +3,10 @@
 *.egg-info
 *.swp
 tags
+education_lms/docs/current
+education_lms/public/dist
+__pycache__/
+*.py[cod]
+*$py.class
 node_modules
+package-lock.json
