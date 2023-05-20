@@ -197,7 +197,7 @@ input[type=checkbox] {
 
 .cards-parent {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   -moz-column-gap: 40px;
   column-gap: 40px;
   row-gap: 40px;
@@ -206,7 +206,7 @@ input[type=checkbox] {
 
 @media (max-width: 767px) {
   .cards-parent {
-	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 	-moz-column-gap: 16px;
 	column-gap: 16px;
 	row-gap: 16px;
