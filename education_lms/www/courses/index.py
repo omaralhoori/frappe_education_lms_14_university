@@ -1,4 +1,4 @@
-from education_lms.education_lms.utils import get_enrolled_courses
+from education_lms.education_lms.utils import get_enrolled_courses, get_live_courses
 import frappe
 from frappe import _
 
@@ -6,6 +6,7 @@ from frappe import _
 def get_context(context):
 	context.no_cache = 1
 	context.enrolled_courses = get_enrolled_courses()
+	context.live_courses = get_live_courses(context.enrolled_courses)
 
 	context.metatags = {
 		"title": _("Course List"),
@@ -13,3 +14,4 @@ def get_context(context):
 		"description": "This page lists all the courses for student",
 		"keywords": "All Courses, Courses, Learn",
 	}
+	return context

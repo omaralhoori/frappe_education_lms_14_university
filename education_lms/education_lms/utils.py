@@ -1,7 +1,43 @@
 import hashlib
+from education_lms.education_lms.md import markdown_to_html
 import frappe
 from frappe import _
 from frappe.utils.data import cint
+import re
+
+
+RE_SLUG_NOTALLOWED = re.compile("[^a-z0-9]+")
+
+
+def slugify(title, used_slugs=None):
+	"""Converts title to a slug.
+
+	If a list of used slugs is specified, it will make sure the generated slug
+	is not one of them.
+
+	    >>> slugify("Hello World!")
+	    'hello-world'
+	    >>> slugify("Hello World!", ['hello-world'])
+	    'hello-world-2'
+	    >>> slugify("Hello World!", ['hello-world', 'hello-world-2'])
+	    'hello-world-3'
+	"""
+	if not used_slugs:
+		used_slugs = []
+
+	slug = RE_SLUG_NOTALLOWED.sub("-", title.lower()).strip("-")
+	used_slugs = set(used_slugs)
+
+	if slug not in used_slugs:
+		return slug
+
+	count = 2
+	while True:
+		new_slug = f"{slug}-{count}"
+		if new_slug not in used_slugs:
+			return new_slug
+		count = count + 1
+
 
 def get_enrolled_courses():
     student = frappe.db.get_value("Student", {"user": frappe.session.user}, "name")
@@ -15,6 +51,17 @@ def get_enrolled_courses():
 
     return courses
 
+def get_live_courses(enrolled_courses):
+	enrolled_courses = [f'"{course.name}"' for course in enrolled_courses]
+	where_stmt = ""
+	if len(enrolled_courses) > 0:
+		where_stmt = "WHERE name not in ({enrolled_courses})".format(enrolled_courses=",".join(enrolled_courses))
+	courses = frappe.db.sql("""
+		select crs.course_name as title, crs.name as name, crs.hero_image as image
+		FROM `tabCourse` as crs
+		{where_stmt}
+	""".format(where_stmt=where_stmt), as_dict=True)
+	return courses
 
 def get_instructors(course):
     student = frappe.db.get_value("Student", {"user": frappe.session.user}, ["name"])
@@ -54,6 +101,110 @@ def get_palette(full_name):
 	return palette[idx % 8]
 
 
-def redirect_to_courses_list():
-	frappe.local.flags.redirect_location = "/courses"
+def redirect_to_courses_list(redirect_to='/courses'):
+	frappe.local.flags.redirect_location = redirect_to
 	raise frappe.Redirect
+
+
+def get_course_progress(course_name, user):
+    student = frappe.db.get_value("Student", {"user": user}, ["name"])
+    if not student: return frappe._dict({"course_enabled": False})
+    progress = frappe.db.get_value("Course Enrollment", {"course": course_name, "enrollment_status": ["IN", "Enrolled,Partially Pulled"]}, [
+          "current_lesson_type", "current_lesson", "progress"
+    ])
+    if progress: return frappe._dict({"course_enabled": True, "progress": progress})
+
+
+
+def get_lessons(course, topic=None):
+	"""If chapter is passed, returns lessons of only that chapter.
+	Else returns lessons of all chapters of the course"""
+	lessons = []
+	
+	if topic:
+		return get_lesson_details(topic)
+	topics = get_topics(course)
+	for topic in topics:
+		lesson = get_lesson_details(topic, topic.idx)
+		lessons += lesson
+	return lessons
+
+
+
+
+def get_lesson_details(topic, parent_idx=1):
+	lessons = []
+	lesson_list = frappe.get_all(
+		"Topic Content", {"parent": topic.name}, ["content_type","content", "idx"], order_by="idx"
+	)
+
+	for row in lesson_list:
+		lesson_details = frappe.db.get_value(
+			row.content_type,
+			row.content,
+			[
+				"name",
+				"title",
+				"content as body"
+			],
+			as_dict=True,
+		)
+		# lesson_details.number = flt(f"{chapter.idx}.{row.idx}")
+		lesson_details.icon = "icon-list"
+		lesson_details.content_type = row.content_type
+		lesson_details.content = row.content
+		lesson_details.idx = f"{parent_idx}.{row.idx}"
+		# macros = find_macros(lesson_details.body)
+
+		# for macro in macros:
+		# 	if macro[0] == "YouTubeVideo":
+		# 		lesson_details.icon = "icon-video"
+		# 	elif macro[0] == "Quiz":
+		# 		lesson_details.icon = "icon-quiz"
+		lessons.append(lesson_details)
+	return lessons
+
+def show_start_learing_cta(course, membership):
+	show_button = True
+
+	return show_button
+
+
+def get_topics(course):
+	topics = frappe.db.sql("""
+		SELECT tpc.name, tpc.topic_name, tpc.description, crsTpc.idx FROM `tabCourse Topic` as crsTpc
+		INNER JOIN `tabTopic` as tpc ON crsTpc.topic=tpc.name
+		WHERE crsTpc.parent=%(course)s
+	""", {"course": course}, as_dict=True)
+	return topics
+
+def get_progress(course, lesson):
+	return 'Complete'
+
+def get_slugified_chapter_title(chapter):
+	s = slugify(chapter)
+	return s
+
+def get_lesson_url(course,  lesson_type, lesson):
+	return f"/lessons?course={course}&lesson-type={lesson_type}&lesson={lesson}"
+
+
+
+
+def render_html(lesson):
+	youtube = lesson.youtube
+	quiz_id = lesson.quiz_id
+	body = lesson.body or ""
+
+	if youtube and "/" in youtube:
+		youtube = youtube.split("/")[-1]
+
+	quiz_id = "{{ Quiz('" + quiz_id + "') }}" if quiz_id else ""
+	youtube = "{{ YouTubeVideo('" + youtube + "') }}" if youtube else ""
+	text = youtube + body + quiz_id
+
+	if lesson.question:
+		assignment = "{{ Assignment('" + lesson.question + "-" + lesson.file_type + "') }}"
+		text = text + assignment
+
+	return markdown_to_html(text)

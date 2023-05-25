@@ -1,0 +1,136 @@
+{% extends "education_lms/templates/lms_base.html" %}
+{% block title %}
+    {{  course.course_name }}
+{% endblock %}
+
+
+{% block page_content %}
+<div class="common-page-style pt-0 pb-0">
+    <div class="course-home-top-container">
+        {{ CourseHomeHeader(course) }}
+        <div class="course-home-page">
+            <div class="container">
+                <div class="course-body-container">
+                    {{ CourseHeaderOverlay(course) }}
+                    {{ widgets.CourseOutline(course=course, membership=progress) }}
+
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% macro CourseHomeHeader(course) %}
+<div class="course-head-container">
+    <div class="container pt-8 pb-10">
+        <div class="course-card-wide">
+        {{ BreadCrumb(course) }}
+        {{ CourseCardWide(course) }}
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+
+<!-- BreadCrumb -->
+{% macro BreadCrumb(course) %}
+<div class="breadcrumb">
+    <a class="dark-links" href="/courses">{{ _("All Courses") }}</a>
+    <img class="ml-1 mr-1" src="/assets/education_lms/icons/chevron-right.svg">
+    <span class="breadcrumb-destination">{{ course.course_name }}</span>
+</div>
+{% endmacro %}
+
+
+
+
+<!-- Course Card -->
+{% macro CourseCardWide(course) %}
+
+    <div 
+        id="title" {% if course.name %} data-course="{{ course.name | urlencode }}" {% endif %}
+        class="course-card-wide-title">{% if course.course_name %} {{ course.course_name }} {% endif %}</div>
+
+    <div  id="intro" >{% if course.description %} {{ course.description }} {% endif %}</div>
+
+
+    {% set instructors =  get_instructors(course.name)  %}
+    {% if instructors|length > 0 %}
+    <div class="mt-8">
+        <div class="bold-heading">{{ _("Instructors") }}:</div>
+        {% for instructor in instructors %}
+        <div class="mt-1">
+            {{ widgets.Avatar(member=instructor, avatar_class="avatar-small") }}
+            <a class="button-links" href="">
+                <span class="course-instructor"> {{ instructor.full_name }} </span>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+{% endmacro %}
+
+
+<!-- Overlay -->
+{% macro CourseHeaderOverlay(course) %}
+    <div class="course-overlay-card">
+
+        <div class="course-image {% if not course.image %} default-image {% endif %}"
+        {% if course.hero_image %} style="background-image: url( {{ course.hero_image | urlencode }} );" {% endif %}>
+            {% if not course.hero_image %}
+                <div class="default-image-text">{{ course.course_name[0] }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="course-overlay-content">
+
+            {% if progress %}
+    {% set progress_percent = frappe.utils.cint(progress.progress[2]) %}
+    <div class="mt-2">
+        <div class="progress-percent m-0">{{ progress_percent }}% {{ _("Completed") }}</div>
+        <div class="progress" title="{{ progress_percent }}% Completed">
+            <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress_percent }}"
+            aria-valuemin="0" aria-valuemax="100" style="width:{{ progress_percent }}%">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+            {{ Notes(course) }}
+
+            <div class="vertically-center mb-3 mt-3">
+                <svg class="icon icon-md mr-1">
+                    <use href="#icon-education"></use>
+                </svg>
+                {{ get_lessons(course.name) | length }} {{ _("Lessons") }}
+            </div>
+
+
+            {{ CTASection(course, membership) }}
+
+        </div>
+    </div>
+
+{% endmacro %}
+
+
+{% macro Notes(course) %}
+   
+{% endmacro %}
+
+{% macro CTASection(course, membership) %}
+    {% if membership %}
+    <a class="btn btn-primary wide-button" id="continue-learning"
+        href="{{ get_lesson_url(course.name, lesson_index) }}">
+        {{ _("Continue Learning") }}
+    </a>
+
+    {% elif show_start_learing_cta(course, membership) %}
+    <div class="btn btn-primary wide-button join-batch" data-course="{{ course.name | urlencode }}">
+        {{ _("Start Learning") }}
+    </div>
+    {% endif %}
+{% endmacro %}

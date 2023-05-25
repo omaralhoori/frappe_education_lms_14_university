@@ -1217,6 +1217,7 @@ pre {
   position: absolute;
   top: 10%;
   right: 7%;
+  width: 300px;
   max-width: 400px;
   z-index: 4;
 }

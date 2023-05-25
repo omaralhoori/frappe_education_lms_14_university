@@ -51,7 +51,7 @@
         </div>
 
         {% if read_only %}
-            <a class="stretched-link" href="/courses/{{ course.name }}"></a>
+            <a class="stretched-link" href="/courses/course?course-id={{ course.name }}"></a>
 		{% else %}
             {% if progress != 100 and membership and not course.upcoming %}
 
@@ -62,7 +62,7 @@
 				<a class="stretched-link" href="{{ get_lesson_url(course.name, lesson_index) }}{{ query_parameter }}"></a>
 
 			{% else %}
-				<a class="stretched-link" href="/courses/{{ course.name }}"></a>
+				<a class="stretched-link" href="/courses/course?course-id={{ course.name }}"></a>
             {% endif %}
         {% endif %}
     </div>

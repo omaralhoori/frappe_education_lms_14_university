@@ -64,6 +64,12 @@ jinja = {
 	"methods": [
     "education_lms.education_lms.utils.get_instructors",
     "education_lms.education_lms.utils.get_palette",
+    "education_lms.education_lms.utils.get_lessons",
+    "education_lms.education_lms.utils.show_start_learing_cta",
+    "education_lms.education_lms.utils.get_slugified_chapter_title",
+    "education_lms.education_lms.utils.get_topics",
+    "education_lms.education_lms.utils.get_progress",
+    "education_lms.education_lms.utils.render_html",
 	],
 	#"filters": "education_lms.utils.jinja_filters"
 }

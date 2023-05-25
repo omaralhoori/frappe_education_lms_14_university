@@ -58,13 +58,12 @@ const join_course = (e) => {
 	let batch = $(e.currentTarget).attr("data-batch");
 	batch = batch ? decodeURIComponent(batch) : "";
 	frappe.call({
-		method: "lms.lms.doctype.lms_batch_membership.lms_batch_membership.create_membership",
+		method: "education.education.doctype.course_enrollment.course_enrollment.create_enrollment",
 		args: {
-			batch: batch ? batch : "",
 			course: course,
 		},
 		callback: (data) => {
-			if (data.message == "OK") {
+			if (data.message.success) {
 				$(".no-preview-modal").modal("hide");
 				frappe.show_alert(
 					{
@@ -73,9 +72,20 @@ const join_course = (e) => {
 					},
 					3
 				);
-				setTimeout(function () {
-					window.location.href = `/courses/${course}/learn/1.1`;
-				}, 1000);
+				// if (data.message.first_lesson){
+				// 	setTimeout(function () {
+				// 		window.location.href = `/courses/${course}/learn/1.1`;
+				// 	}, 1000);
+				// }
+				
+			}else if(data.message.error){
+				frappe.show_alert(
+					{
+						message: data.message.error,
+						indicator: "red",
+					},
+					5
+				);
 			}
 		},
 	});

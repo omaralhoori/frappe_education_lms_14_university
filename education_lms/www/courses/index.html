@@ -21,6 +21,11 @@
                         {{ _("Enrolled") }} ({{ enrolled_courses | length }})
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#courses-live">
+                        {{ _("Live Courses") }} ({{ live_courses | length }})
+                    </a>
+                </li>
                 {% endif %}
 
 
@@ -36,8 +41,15 @@
                     {% set classes = "enrolled-courses" %}
                     {% include "education_lms/templates/course_list.html" %}
                 </div>
+                <div class="tab-pane fade" id="courses-live" role="tabpanel" aria-labelledby="courses-live">
+					{% set courses = live_courses %}
+                    {% set title = _("Live Courses") %}
+                    {% set classes = "live-courses" %}
+                    {% include "education_lms/templates/course_list.html" %}
+                </div>
                 {% endif %}
             </div>
+            
     </div>
 </div>
 {% endblock %}
