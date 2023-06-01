@@ -1,3 +1,4 @@
+from education.education.doctype.course_activity.course_activity import create_course_enrollment_activity
 import frappe
 from frappe import _
 from frappe.utils import cstr, flt
@@ -7,7 +8,6 @@ from education_lms.www.utils import get_common_context, redirect_to_lesson
 
 
 def get_context(context):
-	get_common_context(context)
 
 	lesson_type = frappe.form_dict.get("lesson-type")
 	lesson = frappe.form_dict.get("lesson")
@@ -17,7 +17,8 @@ def get_context(context):
 	# 	"Chapter Reference", {"idx": chapter_index, "parent": context.course.name}, "chapter"
 	# )
 
-
+	create_course_enrollment_activity(course, lesson_type, lesson)
+	get_common_context(context)
 	context.lesson = get_current_lesson_details(lesson_type, lesson, context)
 	context.show_lesson = (
 		context.membership.course_enabled
@@ -69,18 +70,24 @@ def get_url(lesson, course):
 
 
 def get_neighbours(current, lessons):
-	current = flt(current)
-	numbers = sorted(flt(lesson.idx) for lesson in lessons)
+	current = idx_to_num(current)
+	numbers = sorted(idx_to_num(lesson.idx) for lesson in lessons)
 	index = numbers.index(current)
 	prev_lesson,next_lesson = None, None
 	for lesson in lessons:
 		if index - 1 >= 0:
-			if flt(lesson.idx) == numbers[index - 1]:
+			if idx_to_num(lesson.idx) == numbers[index - 1]:
 				prev_lesson = lesson
 		if index + 1 < len(numbers):
-			if flt(lesson.idx) == numbers[index + 1] :
+			if idx_to_num(lesson.idx) == numbers[index + 1] :
 				next_lesson = lesson
 	return {
 		"prev": prev_lesson,
 		"next": next_lesson,
 	}
+
+def idx_to_num(index):
+	new_num = 0
+	index_list = index.split(".")
+	new_num = int(index_list[0]) * 100 + int(index_list[1])
+	return new_num

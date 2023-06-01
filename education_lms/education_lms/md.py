@@ -62,7 +62,7 @@ def _remove_quotes(value):
 
 
 def get_macro_registry():
-	d = frappe.get_hooks("lms_markdown_macro_renderers") or {}
+	d = frappe.get_hooks("education_lms_markdown_macro_renderers") or {}
 	return {name: frappe.get_attr(klass[0]) for name, klass in d.items()}
 
 

@@ -40,20 +40,17 @@
 
                 {% if membership.course_enabled %}
                 <a class="lesson-links"
-                {% if is_instructor and not lesson.include_in_preview %}
-                title="{{ _('This lesson is not available for preview. As you are the Instructor of the course only you can see it.') }}"
-                {% endif %}
                 href="/lessons?course={{course.name}}&lesson-type={{lesson.content_type}}&lesson={{lesson.content}}">
 
                     <svg class="icon icon-sm mr-2">
-                        <use class="" href="#{{ lesson.icon }}">
+                        <use class="" href="#{{ lesson.icon }}"> </use>
                     </svg>
 
                     <span>{{ lesson.title }}</span>
 
-                    {% if membership %}
-                    <svg class="icon icon-sm lesson-progress-tick {{ get_progress(course.name, lesson.name) != 'Complete' and 'hide' }}">
-                        <use class="" href="#icon-green-check">
+                    {% if membership and get_progress(course.name, lesson.content_type, lesson.content) == 'Complete' %}
+                    <svg class="icon icon-sm lesson-progress-tick ">
+                        <use class="" href="#icon-solid-success"> </use>
                     </svg>
                     {% endif %}
 

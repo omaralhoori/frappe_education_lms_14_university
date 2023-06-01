@@ -62,7 +62,7 @@
             {% if lesson.name %} data-lesson="{{ lesson.name }}" {% endif %}
             >{% if lesson.title %}{{ lesson.title }}{% endif %}</div>
 
-        {% if get_progress(course.name, lesson.name) == 'Complete' %}
+        {% if get_progress(course.name, lesson.content_type, lesson.content) == 'Complete' %}
         <span id="status-indicator" class="indicator-pill green">{{ _("COMPLETED") }}</span>
         {% endif %}
 
@@ -125,9 +125,7 @@
         {% endif %}
     </div>
 
-    {% if not lesson.edit_mode %}
     {{ pagination(prev_url, next_url) }}
-    {% endif %}
 
 </div>
 {% endmacro %}

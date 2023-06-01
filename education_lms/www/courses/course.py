@@ -23,6 +23,8 @@ def set_course_context(context, course_name):
             "hero_image",
             "description",
             "published",
+            "course_points",
+            "resource_link"
         ],
         as_dict=True,
     )

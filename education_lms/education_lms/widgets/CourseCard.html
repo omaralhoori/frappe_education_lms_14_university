@@ -1,4 +1,4 @@
-{% set progress = frappe.utils.cint("100") %}
+{% set progress = frappe.utils.cint(course.progress) or 0 %}
 
 <div class="common-card-style course-card" data-course="{{ course.name }}">
 
@@ -13,7 +13,7 @@
     <div class="course-card-content">
         <div class="course-card-title">{{ course.title }}</div>
 
-        {% if progress %}
+        {% if progress >= 0 %}
         <div class="progress">
             <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}"
             aria-valuemin="0" aria-valuemax="100" style="width:{{ progress }}%">

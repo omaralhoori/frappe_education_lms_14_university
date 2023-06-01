@@ -70,9 +70,21 @@ jinja = {
     "education_lms.education_lms.utils.get_topics",
     "education_lms.education_lms.utils.get_progress",
     "education_lms.education_lms.utils.render_html",
+    "education_lms.education_lms.utils.get_lesson_url",
 	],
 	#"filters": "education_lms.utils.jinja_filters"
 }
+
+
+## Markdown Macros for Lessons
+education_lms_markdown_macro_renderers = {
+	"Exercise": "education_lms.plugins.exercise_renderer",
+	"Quiz": "education_lms.plugins.quiz_renderer",
+	"YouTubeVideo": "education_lms.plugins.youtube_video_renderer",
+	"Video": "education_lms.plugins.video_renderer",
+	"Assignment": "education_lms.plugins.assignment_renderer",
+}
+
 
 # Installation
 # ------------

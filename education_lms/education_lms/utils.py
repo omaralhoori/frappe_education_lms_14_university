@@ -4,6 +4,8 @@ import frappe
 from frappe import _
 from frappe.utils.data import cint
 import re
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 
 RE_SLUG_NOTALLOWED = re.compile("[^a-z0-9]+")
@@ -44,7 +46,7 @@ def get_enrolled_courses():
     if not student: frappe.throw(_('You are not allowed to view this page!'))
     
     courses = frappe.db.sql("""
-        SELECT crs.course_name as title, crs.name as name, crsEnrl.enrollment_status, crs.hero_image as image, crsEnrl.enrollment_date, crsEnrl.program  FROM `tabCourse Enrollment` as crsEnrl
+        SELECT crs.course_name as title, crs.name as name, crsEnrl.enrollment_status, crs.hero_image as image, crsEnrl.enrollment_date, crsEnrl.program, crsEnrl.progress  FROM `tabCourse Enrollment` as crsEnrl
         INNER JOIN `tabCourse` as crs ON crs.name=crsEnrl.course
         WHERE crsEnrl.student=%(student)s AND crsEnrl.enrollment_status IN ('Enrolled', 'Partially Pulled')
     """, {"student": student}, as_dict=True)
@@ -107,13 +109,13 @@ def redirect_to_courses_list(redirect_to='/courses'):
 
 
 def get_course_progress(course_name, user):
-    student = frappe.db.get_value("Student", {"user": user}, ["name"])
-    if not student: return frappe._dict({"course_enabled": False})
-    progress = frappe.db.get_value("Course Enrollment", {"course": course_name, "enrollment_status": ["IN", "Enrolled,Partially Pulled"]}, [
-          "current_lesson_type", "current_lesson", "progress"
-    ])
-    if progress: return frappe._dict({"course_enabled": True, "progress": progress})
-
+	student = frappe.db.get_value("Student", {"user": user}, ["name"])
+	if not student: return frappe._dict({"course_enabled": False})
+	progress = frappe.db.get_value("Course Enrollment", {"course": course_name, "enrollment_status": ["IN", "Enrolled,Partially Pulled"]}, [
+			"current_lesson_type", "current_lesson", "progress"
+	], as_dict=True)
+	if progress: return frappe._dict({"course_enabled": True, "progress": progress})
+	return frappe._dict({"course_enabled": False})
 
 
 def get_lessons(course, topic=None):
@@ -142,15 +144,11 @@ def get_lesson_details(topic, parent_idx=1):
 		lesson_details = frappe.db.get_value(
 			row.content_type,
 			row.content,
-			[
-				"name",
-				"title",
-				"content as body"
-			],
+			get_lesson_fields(row.content_type),
 			as_dict=True,
 		)
 		# lesson_details.number = flt(f"{chapter.idx}.{row.idx}")
-		lesson_details.icon = "icon-list"
+		lesson_details.icon = get_lesson_icon(row.content_type)
 		lesson_details.content_type = row.content_type
 		lesson_details.content = row.content
 		lesson_details.idx = f"{parent_idx}.{row.idx}"
@@ -164,6 +162,29 @@ def get_lesson_details(topic, parent_idx=1):
 		lessons.append(lesson_details)
 	return lessons
 
+def get_lesson_fields(lesson_type):
+	if lesson_type == 'Article':
+		return [
+				"name",
+				"title",
+				"content as body"
+			]
+	elif lesson_type == 'Video':
+		return [
+			"name",
+			"title",
+			"url",
+			"provider",
+			"description"
+		]
+	else:
+		return [
+			"name"
+		]
+def get_lesson_icon(lesson_type):
+	if lesson_type == 'Video':
+		return 'icon-image'
+	else: return 'icon-list'
 def show_start_learing_cta(course, membership):
 	show_button = True
 
@@ -178,9 +199,17 @@ def get_topics(course):
 	""", {"course": course}, as_dict=True)
 	return topics
 
-def get_progress(course, lesson):
-	return 'Complete'
-
+def get_progress(course, lesson_type, lesson):
+	student = frappe.db.get_value("Student", {"user": frappe.session.user}, "name")
+	if not student: return
+	course_enrollment = frappe.db.get_value("Course Enrollment", {"student": student, "course": course, "enrollment_status": ["in", ["Enrolled", "Partially Pulled"]]})
+	if not course_enrollment:
+		frappe.msgprint(_("You are not enrolled in this course"))
+		return 'Not Completed'
+	if frappe.db.exists("Course Activity", {"enrollment": course_enrollment, "content_type": lesson_type, "content": lesson}):
+		return 'Complete'
+	else:
+		return 'Not Completed'
 def get_slugified_chapter_title(chapter):
 	s = slugify(chapter)
 	return s
@@ -192,12 +221,19 @@ def get_lesson_url(course,  lesson_type, lesson):
 
 
 def render_html(lesson):
-	youtube = lesson.youtube
-	quiz_id = lesson.quiz_id
 	body = lesson.body or ""
+	youtube = None
+	if lesson.content_type == 'Video':	
+		youtube = lesson.url
+		body = lesson.description
+	quiz_id = lesson.quiz_id
+	
 
 	if youtube and "/" in youtube:
-		youtube = youtube.split("/")[-1]
+		parsed_url = urlparse(youtube)
+		if len(parse_qs(parsed_url.query)['v']) > 0:
+			youtube = parse_qs(parsed_url.query)['v'][0]
+
 
 	quiz_id = "{{ Quiz('" + quiz_id + "') }}" if quiz_id else ""
 	youtube = "{{ YouTubeVideo('" + youtube + "') }}" if youtube else ""

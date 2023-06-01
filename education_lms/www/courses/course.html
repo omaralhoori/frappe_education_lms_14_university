@@ -88,7 +88,7 @@
         <div class="course-overlay-content">
 
             {% if progress %}
-    {% set progress_percent = frappe.utils.cint(progress.progress[2]) %}
+    {% set progress_percent = frappe.utils.cint(progress.progress.progress) %}
     <div class="mt-2">
         <div class="progress-percent m-0">{{ progress_percent }}% {{ _("Completed") }}</div>
         <div class="progress" title="{{ progress_percent }}% Completed">
@@ -103,13 +103,19 @@
 
             <div class="vertically-center mb-3 mt-3">
                 <svg class="icon icon-md mr-1">
-                    <use href="#icon-education"></use>
+                    <use href="#icon-color-review-points"></use>
                 </svg>
                 {{ get_lessons(course.name) | length }} {{ _("Lessons") }}
             </div>
+            <div class="vertically-center mb-3 mt-3">
+                <svg class="icon icon-md mr-1">
+                    <use href="#icon-color-energy-points"></use>
+                </svg>
+                {{ course.course_points }} {{ _("Points") }}
+            </div>
 
 
-            {{ CTASection(course, membership) }}
+            {{ CTASection(course, progress) }}
 
         </div>
     </div>
@@ -122,9 +128,9 @@
 {% endmacro %}
 
 {% macro CTASection(course, membership) %}
-    {% if membership %}
+    {% if membership.course_enabled %}
     <a class="btn btn-primary wide-button" id="continue-learning"
-        href="{{ get_lesson_url(course.name, lesson_index) }}">
+        href="{{ get_lesson_url(course.name,membership.progress.current_lesson_type, membership.progress.current_lesson ) }}">
         {{ _("Continue Learning") }}
     </a>
 
@@ -132,5 +138,12 @@
     <div class="btn btn-primary wide-button join-batch" data-course="{{ course.name | urlencode }}">
         {{ _("Start Learning") }}
     </div>
+    {% endif %}
+    {% if membership.course_enabled and course.resource_link %}
+    <a class="mt-3 btn btn-primary wide-button" 
+    href="{{ course.resource_link }}">
+    {{ _("Download Resource") }}
+</a>
+
     {% endif %}
 {% endmacro %}
