@@ -100,20 +100,23 @@
     {% endif %}
 
             {{ Notes(course) }}
-
+            {% set lessons = get_lessons(course.name) %}
+            {% if lessons|length > 0 %}
             <div class="vertically-center mb-3 mt-3">
                 <svg class="icon icon-md mr-1">
                     <use href="#icon-color-review-points"></use>
                 </svg>
-                {{ get_lessons(course.name) | length }} {{ _("Lessons") }}
+                {{  lessons | length }} {{ _("Lessons") }}
             </div>
+            {% endif %}
+            {% if course.course_points > 0 %}
             <div class="vertically-center mb-3 mt-3">
                 <svg class="icon icon-md mr-1">
                     <use href="#icon-color-energy-points"></use>
                 </svg>
                 {{ course.course_points }} {{ _("Points") }}
             </div>
-
+            {% endif %}
 
             {{ CTASection(course, progress) }}
 
@@ -144,6 +147,13 @@
     <a class="mt-3 btn btn-primary wide-button" 
     href="{{ course.resource_link }}">
     {{ _("Download Resource") }}
+</a>
+
+    {% endif %}
+    {% if course_group and course_group.get('virtual_room_link') %}
+    <a class="mt-3 btn btn-primary wide-button" target="_blank"
+    href="{{ course_group.get('virtual_room_link') }}">
+    {{ _("Course Virtual Room") }}
 </a>
 
     {% endif %}
