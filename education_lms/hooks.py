@@ -120,7 +120,7 @@ education_lms_markdown_macro_renderers = {
 standard_portal_menu_items = [
 	{
 		"title": _("Enrolled Courses"),
-		"route": "/courses",
+		"route": "/courses#courses-enrolled",
 		"role": "Student",
 	},
 ]

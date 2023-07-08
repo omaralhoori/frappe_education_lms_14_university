@@ -37,7 +37,7 @@
 <!-- BreadCrumb -->
 {% macro BreadCrumb(course) %}
 <div class="breadcrumb">
-    <a class="dark-links" href="/courses">{{ _("All Courses") }}</a>
+    <a class="dark-links" href="/courses#courses-enrolled">{{ _("All Courses") }}</a>
     <img class="ml-1 mr-1" src="/assets/education_lms/icons/chevron-right.svg">
     <span class="breadcrumb-destination">{{ course.course_name }}</span>
 </div>
@@ -129,11 +129,12 @@
 
 {% macro CTASection(course, membership) %}
     {% if membership.course_enabled %}
+    {% if membership.progress.current_lesson %}
     <a class="btn btn-primary wide-button" id="continue-learning"
         href="{{ get_lesson_url(course.name,membership.progress.current_lesson_type, membership.progress.current_lesson ) }}">
         {{ _("Continue Learning") }}
     </a>
-
+    {% endif %}
     {% elif show_start_learing_cta(course, membership) %}
     <div class="btn btn-primary wide-button join-batch" data-course="{{ course.name | urlencode }}">
         {{ _("Start Learning") }}
