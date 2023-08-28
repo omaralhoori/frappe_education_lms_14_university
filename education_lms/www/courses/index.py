@@ -5,6 +5,7 @@ from frappe import _
 
 def get_context(context):
 	context.no_cache = 1
+	context.show_sidebar = True
 	context.enrolled_courses = get_enrolled_courses()
 	context.show_live_courses = frappe.db.get_single_value("LMS Settings", 'show_live_courses')
 	if context.show_live_courses:
