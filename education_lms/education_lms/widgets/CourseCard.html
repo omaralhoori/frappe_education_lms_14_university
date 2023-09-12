@@ -12,7 +12,7 @@
 
     <div class="course-card-content">
         <div class="course-card-title">{{ course.title }}</div>
-
+{#
         {% if progress >= 0 %}
         <div class="progress">
             <div class="progress-bar" role="progressbar" aria-valuenow="{{ progress }}"
@@ -22,7 +22,29 @@
         </div>
         <div class="progress-percent">{{ progress }}% {{ _("Completed") }} </div>
         {% endif %}
+        #}
+        {% set group = get_student_course_group(course.name) %}
+        
+        {% if group | length > 0 and group[0]['course_day'] %}
+        <div>
+            {{get_weekday(group[0]['course_day'])}}, {{format_time(group[0]['from_time'])}} - {{format_time(group[0]['to_time'])}}  
+        </div>
+        {% endif %}
+        {% if group |length > 0 and group[0].get('virtual_room_link') %}
+        <a class="mt-3 mb-2 btn btn-primary wide-button" target="_blank"
+        href="{{ group[0].get('virtual_room_link') }}">
+        {{ _("Course Virtual Room") }}
+    </a>
+    
+        {% endif %}
+        {% if group |length > 0 and group[0].get('resource_link') %}
+        <a class="mt-3 btn btn-primary wide-button"  target="_blank"
+            href="{{ group[0].get('resource_link')}}">
+            {{ _("Download Resource") }}
+        </a>
 
+    {% endif %}
+    
         <div class="course-card-footer">
             <span class="">
                 {% set instructors = get_instructors(course.name) %}
@@ -49,7 +71,7 @@
                     </span>
             </span>
         </div>
-
+        {# .. 
         {% if read_only %}
             <a class="stretched-link" href="/courses/course?course-id={{ course.name }}"></a>
 		{% else %}
@@ -65,5 +87,6 @@
 				<a class="stretched-link" href="/courses/course?course-id={{ course.name }}"></a>
             {% endif %}
         {% endif %}
+        #}
     </div>
 </div>
