@@ -27,7 +27,7 @@
         
         {% if group | length > 0 and group[0]['course_day'] %}
         <div>
-            {{get_weekday(group[0]['course_day'])}}, {{format_time(group[0]['from_time'])}} - {{format_time(group[0]['to_time'])}}  
+            {{get_weekday(group[0]['course_day'])}}, {{format_time(group[0]['from_time'])}} - {{format_time(group[0]['to_time'])}}  {{_('Jordan Time')}}
         </div>
         {% endif %}
         {% if group |length > 0 and group[0].get('virtual_room_link') %}
