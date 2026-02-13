@@ -25,7 +25,7 @@
         #}
         {% set group = get_student_course_group(course.name) %}
         
-        {% if group | length > 0 and group[0]['course_day'] %}
+        {% if group | length > 0 and (group[0]['course_day'] or group[0]['course_day'] == 0)  %}
         <div>
             {{get_weekday(group[0]['course_day'])}}, {{format_time(group[0]['from_time'])}} - {{format_time(group[0]['to_time'])}}  {{_('Jordan Time')}}
         </div>
